@@ -1,0 +1,35 @@
+mapboxgl.accessToken = 'your_mapbox_access_token'; // Replace with your Mapbox access token
+
+const cities = [
+    { name: 'New York', coordinates: [-74.006, 40.7128], pollution: 'High' },
+    { name: 'Los Angeles', coordinates: [-118.2437, 34.0522], pollution: 'High' },
+    { name: 'Tokyo', coordinates: [139.6917, 35.6895], pollution: 'Medium' },
+    { name: 'Paris', coordinates: [2.3522, 48.8566], pollution: 'Medium' },
+    { name: 'Sydney', coordinates: [151.2093, -33.8688], pollution: 'Low' }
+];
+
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v10',
+    center: [0, 20],
+    zoom: 1.5
+});
+
+cities.forEach(city => {
+    new mapboxgl.Marker()
+        .setLngLat(city.coordinates)
+        .setPopup(new mapboxgl.Popup().setHTML(`<h3>${city.name}</h3><p>Pollution: ${city.pollution}</p>`))
+        .addTo(map);
+});
+
+map.on('click', (e) => {
+    const features = map.queryRenderedFeatures(e.point, {
+        layers: ['']
+    });
+    if (!features.length) {
+        return;
+    }
+    const feature = features[0];
+    document.getElementById('city-name').textContent = feature.properties.name;
+    document.getElementById('pollution-level').textContent = `Light Pollution Level: ${feature.properties.pollution}`;
+});
